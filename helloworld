@@ -1,0 +1,62 @@
+        submitHandler: function (form) {
+            $.post(base_url + "/summer/exist", $("#addModal .form").serialize(), function (data, status) {
+                if (data.code == "200") {
+                    $.post(base_url + "/summer/add", $("#addModal .form").serialize(), function (data, status) {
+                        if (data.code == "200") {
+                            $('#addModal').modal('hide');
+                            layer.open({
+                                title: I18n.system_tips,
+                                btn: [I18n.system_ok],
+                                content: I18n.system_add_suc,
+                                icon: '1',
+                                end: function (layero, index) {
+                                    jobTable.fnDraw();
+                                    //window.location.reload();
+                                }
+                            });
+                        } else {
+                            layer.open({
+                                title: I18n.system_tips,
+                                btn: [I18n.system_ok],
+                                content: (data.msg || I18n.system_add_fail),
+                                icon: '2'
+                            });
+                        }
+                    });
+                } else {
+                    layer.confirm('数据库已存在，是否继续？', {
+                        btn: ['继续', '取消'] //可以无限个按钮
+                    }, function (index, layero) {
+                        //按钮【按钮一】的回调
+                        alert(index + "我选择继续，删掉数据库原有数据");
+                        $.post(base_url + "/summer/add", $("#addModal .form").serialize(), function (data, status) {
+                            if (data.code == "200") {
+                                $('#addModal').modal('hide');
+                                layer.open({
+                                    title: I18n.system_tips,
+                                    btn: [I18n.system_ok],
+                                    content: I18n.system_add_suc,
+                                    icon: '1',
+                                    end: function (layero, index) {
+                                        jobTable.fnDraw();
+                                        //window.location.reload();
+                                    }
+                                });
+                            } else {
+                                layer.open({
+                                    title: I18n.system_tips,
+                                    btn: [I18n.system_ok],
+                                    content: (data.msg || I18n.system_add_fail),
+                                    icon: '2'
+                                });
+                            }
+                        });
+                    }, function (index) {
+                        //按钮【按钮二】的回调
+                        alert(index + "我投降！！！");
+                        $('#addModal').modal('hide');
+                    });
+                }
+            });
+        }
+    });
